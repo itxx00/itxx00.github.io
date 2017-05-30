@@ -2,8 +2,6 @@
 layout: post
 author_profile: true
 title: 开篇
-categories: [general]
-tags: [开篇]
 description: 重新写博客
 ---
 
