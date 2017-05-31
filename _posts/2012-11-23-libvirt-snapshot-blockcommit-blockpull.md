@@ -2,8 +2,8 @@
 layout: post
 title: "浅析snapshots, blockcommit,blockpull"
 description: "A quick demo post to some kramdown features."
-categories: [demo]
-tags: [demo, jekyll]
+categories: [virt]
+tags: [libvirt, kvm, snapshot]
 redirect_from:
   - /2012/11/23/
 ---
