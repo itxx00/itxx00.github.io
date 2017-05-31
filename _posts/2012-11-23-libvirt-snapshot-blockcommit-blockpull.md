@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "浅析snapshots, blockcommit,blockpull"
-description: "A quick demo post to some kramdown features."
+description: "show how to create snapshot with libvirt and qemu-img."
 categories: [virt]
 tags: [libvirt, kvm, snapshot]
 redirect_from:
