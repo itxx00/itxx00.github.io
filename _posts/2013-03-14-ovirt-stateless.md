@@ -30,14 +30,15 @@ How to use:
 How it works:
    * On boot, we mount a tmpfs (by default, at /var/lib/stateless/writable), and then parse /etc/rwtab and /etc/rwtab.d/* for things to put there.
 These files have the format:
-<type>  <path>
-   * Types are as follows:
-     * empty: An empty path. Example:
-                 empty     /tmp
-     * dirs: A directory tree that is copied, empty. Example:
-                 dirs      /var/run`
-     * files: A file or directory tree that is copied intact. Example:
-                 files     /etc/resolv.conf
+`<type>  <path>`
+
+* Types are as follows:
+  * empty: An empty path. Example:
+              empty     /tmp
+  * dirs: A directory tree that is copied, empty. Example:
+              dirs      /var/run`
+  * files: A file or directory tree that is copied intact. Example:
+              files     /etc/resolv.conf
 
 A stock rwtab is shipped with common things that need mounted.
 When your computer comes back up, the root and any other system
@@ -62,9 +63,10 @@ Note that mounting or symlinking /proc/mounts to /etc/mtab causes other
 problems such as breaking the df command.
 You can change your read-only root filesystem to read-write mode
 immediately with this command run by the root user:
-mount -n -o remount,rw /
+`mount -n -o remount,rw /`
 
 ## 分析其实现机制
+
 下面把分析过程记录下来：
 
 首先我看到的是fstab文件
