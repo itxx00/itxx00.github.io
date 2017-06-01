@@ -106,4 +106,6 @@ firewall-cmd --add-rich-rule="rule family='ipv4' source address='10.0.0.2' port 
 
 
 [^1]: https://fedoraproject.org/wiki/FirewallD/zh-cn
-[^2]: https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Using_Firewalls.html
+
+参考链接：
+* https://access.redhat.com/documentation/zh-CN/Red_Hat_Enterprise_Linux/7/html/Security_Guide/sec-Using_Firewalls.html
