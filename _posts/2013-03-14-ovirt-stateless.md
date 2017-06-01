@@ -25,42 +25,46 @@ read-only root file system(stateless linux)
 Readonly root support.
 This was add to Fedora for Stateless Linux, i.e. for creating live Fedora CDs.
 How to use:
-   * Edit /etc/sysconfig/readonly-root. Set 'READONLY' to 'yes'.
-   * Add any exceptions that need to be writable that aren't in the stock /etc/rwtab to an /etc/rwtab.d file. (See below)
+   * Edit `/etc/sysconfig/readonly-root`. Set 'READONLY' to 'yes'.
+   * Add any exceptions that need to be writable that aren't in the stock `/etc/rwtab` to an /etc/rwtab.d file. (See below)
 How it works:
-   * On boot, we mount a tmpfs (by default, at /var/lib/stateless/writable), and then parse /etc/rwtab and /etc/rwtab.d/* for things to put there.
+   * On boot, we mount a tmpfs (by default, at /var/lib/stateless/writable), and then parse `/etc/rwtab` and `/etc/rwtab.d/*` for things to put there.
 These files have the format:
 `<type>  <path>`
 
 * Types are as follows:
   * empty: An empty path. Example:
-              empty     /tmp
+              `empty     /tmp`
   * dirs: A directory tree that is copied, empty. Example:
-              dirs      /var/run`
+              `dirs      /var/run`
   * files: A file or directory tree that is copied intact. Example:
-              files     /etc/resolv.conf
+              `files     /etc/resolv.conf`
 
 A stock rwtab is shipped with common things that need mounted.
 When your computer comes back up, the root and any other system
 partitions will be mounted read-only. All the files and directories
-listed in /etc/rwtab will be mounted read-write on a tmpfs filesystem.
+listed in `/etc/rwtab` will be mounted read-write on a tmpfs filesystem.
 You can add additional files and directories to rwtab to make them
 writable after reboot.
+
 Note that this system is stateless. When you reboot again, everything
 written to the tmpfs filesystem vanishes and the system will be exactly
 as it was the last time it was booted. You could add a writable
 filesystem on disk or NFS for writing files you want to retain after
 rebooting.
-Take a look at /etc/rc.d/rc.sysinit to see how the magic is done.
+
+Take a look at `/etc/rc.d/rc.sysinit` to see how the magic is done.
 This capability is a "technology preview" (beta) and is buggy. Note that
-/etc/mtab and thus "mount" do not show the complete list of filesystems
+`/etc/mtab` and thus "mount" do not show the complete list of filesystems
 because the /etc directory is on a read-only filesystem. /proc/mounts
-always shows the correct mount information. You could update /etc/mtab
+always shows the correct mount information. You could update `/etc/mtab`
 from /proc/mounts to correct it both after boot and after running the
 mount or umount commands to change mounts.
-Run "fgrep -v rootfs /proc/mounts >/etc/mtab" to correct /etc/mtab.
+
+Run `fgrep -v rootfs /proc/mounts >/etc/mtab` to correct `/etc/mtab`.
 Note that mounting or symlinking /proc/mounts to /etc/mtab causes other
 problems such as breaking the df command.
+
 You can change your read-only root filesystem to read-write mode
 immediately with this command run by the root user:
 `mount -n -o remount,rw /`
@@ -241,7 +245,10 @@ diff /etc/rc.d/init.d/halt.orig /etc/rc.d/init.d/halt
 > LANG=C __umount_loop '$2 ~ /^\/$|^\/proc|^\/etc|^\/dev/{next}
 ~~~
 
-原来在halt文件里也做了“手脚”，把/etc给加了进去，重启，修改，关机，一切正常。下面是可以参考的文档
+原来在halt文件里也做了“手脚”，把/etc给加了进去，重启，修改，关机，一切正常。
+
+## 参考文档
+下面是可以参考的文档
 
 - http://fedoraproject.org/wiki/StatelessLinux/PrepareImage
 - http://fedoraproject.org/wiki/StatelessLinux/HOWTO
