@@ -453,7 +453,7 @@ run
 ```
 cd /pentest/sniffers/xspy/
 ./xspy –display 192.168.1.125:0 –delay 100
-``
+```
 
 ### 5、使用Autopwn处理扫描结果：
 
