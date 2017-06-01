@@ -201,7 +201,7 @@ systemd考虑到各种发行版本的用户使用习惯，尽量提供更为通�
 
 以上内容仅仅让各位对systemd形成基本的认识，我们将在后期的文章中更加深入地讨论systemd的特性。最后，再次感谢作者Lennart的贡献。
 
-参考链接：
-> http://cgit.freedesktop.org/systemd/
-> http://0pointer.de/blog/projects/
-> https://linuxtoy.org/archives/interview-creater-of-systemd-and-pulseaudio-lennart.html
+> 参考链接：
+> * http://cgit.freedesktop.org/systemd/
+> * http://0pointer.de/blog/projects/
+> * https://linuxtoy.org/archives/interview-creater-of-systemd-and-pulseaudio-lennart.html
