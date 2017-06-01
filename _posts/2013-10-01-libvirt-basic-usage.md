@@ -155,13 +155,15 @@ start() {
 
 至此问题基本解决。
 
-再一个问题，我们前面有发现route和nat的网络区别仅仅是一个做了nat的iptables规则一个没有，那么我们可不可以自己在iptables里面添加相应的规则将route网络变身为nat网络呢？答案肯定是可以的，只需要添加上下面的规则即可,原理还请观看本文的同学自己分析，这里假设我们route网络给虚拟机分配的ip是192.168.100.0/24网段：
+## route网络转换nat网络
+另外一个问题，我们前面有发现route和nat的网络区别仅仅是一个做了nat的iptables规则一个没有，那么我们可不可以自己在iptables里面添加相应的规则将route网络变身为nat网络呢？答案肯定是可以的，只需要添加上下面的规则即可,原理还请观看本文的同学自己分析，这里假设我们route网络给虚拟机分配的ip是192.168.100.0/24网段：
 
 ~~~
 iptables -t nat -A POSTROUTING -s 192.168.100.0/24 -d ! 192.168.100.0/24 -j MASQUERADE
 iptables -A FORWARD --destination 192.168.100.0/24 -m state --state RELATED,ESTABLISHED -j ACCEPT
 ~~~
 
+## 自定义dnsmasq
 这里再添加一个可以手工启动dnsmasq的小脚本
 
 ~~~bash
@@ -184,4 +186,11 @@ iptables -A FORWARD --destination 192.168.122.0/24 -m state --state RELATED,ESTA
 --dhcp-hostsfile=/usr/local/vps/network/dnsmasq/default.hostsfile
 ~~~
 
-接下来还会碰到更多问题，在今后的文章里逐步分享。
+## 重启network导致网络中断
+
+当我们需要实时修改network的配置并使之生效的时候，就得重新启动此network，也就是需要net-destroy再net-start一下，我们的配置才能生效，但是随之而来的问题是，当network被重新启动之后，虚拟机便无法访问网络了，除非把虚拟机的network interface重新attach一下，或者等到虚拟机重新启动，那么为什么会出现这样的问题呢？我们先从它的表象开始分析，至于是否要追究到源码里面就取决于同学们自己了，反正我暂时没那功夫。这里仅仅是抛出来了一块砖。
+
+当一个network启动之后，会自动生成一个虚拟网卡接口如virbr1，也会生成其他一些需要的东西，而重新启动了libvirt的network之后这个接口也会被重启，所以就导致了中途有一个中断的过程，
+
+那事情就比较清晰了，如果你将libvirt启动网络的所有过程拆分开来一个一个的手动生成，需要修改某一部分配置的时候实际上你只需要修改对应的配置文件而不需要重新启动这个virbr1接口，比如上面提到的mac+ip的绑定，如果把dnsmasq独立出来，不让libvirt接管，那么增加了mac+ip绑定之后，仅仅需要重启dnsmasq这个服务。
+
