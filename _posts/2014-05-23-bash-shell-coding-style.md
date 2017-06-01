@@ -146,6 +146,11 @@ if [ $? -ne 0 ]
 then
   dosomething
 fi
+
+while 1
+do
+  do something here
+done
 ```
 
 good:
@@ -154,6 +159,10 @@ good:
 if grep string logfile; then
     dosomething
 fi
+
+while 1; do
+   do something here
+done
 ```
 注意;和then间有一个空格的距离
 
