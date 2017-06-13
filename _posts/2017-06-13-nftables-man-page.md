@@ -12,15 +12,10 @@ tags: [nft, nftables ]
 {:toc .toc}
 
 
-# <a name="AEN1"></a>nft
-
-<div class="refnamediv"><a name="AEN21"></a>
-
 ## Name
 
-nft --  Administration tool for packet filtering and classification</div>
+nft --  Administration tool for packet filtering and classification
 
-<div class="refsynopsisdiv"><a name="AEN24"></a>
 
 ## Synopsis
 
@@ -28,9 +23,7 @@ nft --  Administration tool for packet filtering and classification</div>
 
 **nft** [ `-h | --help` ] [ `-v | --version` ]
 
-</div>
 
-<div class="refsect1"><a name="AEN48"></a>
 
 ## Description
 
@@ -38,7 +31,6 @@ nft is used to set up, maintain and inspect packet filtering and classification 
 
 </div>
 
-<div class="refsect1"><a name="AEN51"></a>
 
 ## Options
 
@@ -126,7 +118,6 @@ Read input from an interactive readline CLI.
 
 </div>
 
-<div class="refsect1"><a name="AEN105"></a>
 
 ## Input file format
 
@@ -185,7 +176,6 @@ filter input iif $int_ifs accept
 
 </div>
 
-<div class="refsect1"><a name="AEN152"></a>
 
 ## Address families
 
@@ -318,7 +308,6 @@ The Netdev address family handles packets from ingress.
 
 </div>
 
-<div class="refsect1"><a name="AEN258"></a>
 
 ## Tables
 
@@ -368,7 +357,6 @@ Flush all chains and rules of the specified table.
 
 </div>
 
-<div class="refsect1"><a name="AEN309"></a>
 
 ## Chains
 
@@ -438,7 +426,6 @@ Flush all rules of the specified chain.
 
 </div>
 
-<div class="refsect1"><a name="AEN387"></a>
 
 ## Rules
 
@@ -482,7 +469,6 @@ Delete the specified rule.
 
 </div>
 
-<div class="refsect1"><a name="AEN434"></a>
 
 ## Sets
 
@@ -568,7 +554,6 @@ Comma-separated list of elements to delete from the specified set.
 
 </div>
 
-<div class="refsect1"><a name="AEN557"></a>
 
 ## Maps
 
@@ -652,7 +637,6 @@ Comma-separated list of element keys to delete from the specified map.
 
 </div>
 
-<div class="refsect1"><a name="AEN668"></a>
 
 ## Stateful objects
 
@@ -785,7 +769,6 @@ Unlike iptables, helper assignment needs to be performed after the conntrack loo
 
 </div>
 
-<div class="refsect1"><a name="AEN806"></a>
 
 ## Expressions
 
@@ -829,7 +812,6 @@ cwr                               0x80
 
 </div>
 
-<div class="refsect1"><a name="AEN823"></a>
 
 ## Data types
 
@@ -1196,7 +1178,6 @@ filter output icmpv6 type { echo-request, echo-reply }
 
 </div>
 
-<div class="refsect1"><a name="AEN1211"></a>
 
 ## Primary expressions
 
@@ -1375,7 +1356,6 @@ inet filter meta nfproto ipv6 output rt nexthop fd00::1
 
 </div>
 
-<div class="refsect1"><a name="AEN1480"></a>
 
 ## Payload expressions
 
@@ -1847,7 +1827,6 @@ There are three types of conntrack expressions. Some conntrack expressions requi
 
 </div>
 
-<div class="refsect1"><a name="AEN2394"></a>
 
 ## Statements
 
@@ -2340,7 +2319,6 @@ This statement passes the packet to userspace using the nfnetlink_queue handler.
 
 </div>
 
-<div class="refsect1"><a name="AEN2969"></a>
 
 ## Additional commands
 
@@ -2434,7 +2412,6 @@ Hit ^C to finish the monitor operation.
 
 </div>
 
-<div class="refsect1"><a name="AEN2995"></a>
 
 ## Error reporting
 
@@ -2489,7 +2466,6 @@ filter output oif wlan0
 
 </div>
 
-<div class="refsect1"><a name="AEN3010"></a>
 
 ## Exit status
 
@@ -2497,7 +2473,6 @@ On success, nft exits with a status of 0\. Unspecified errors cause it to exit w
 
 </div>
 
-<div class="refsect1"><a name="AEN3013"></a>
 
 ## See Also
 
@@ -2507,7 +2482,6 @@ There is an official wiki at: http://wiki.nftables.org
 
 </div>
 
-<div class="refsect1"><a name="AEN3024"></a>
 
 ## Authors
 
@@ -2515,7 +2489,6 @@ nftables was written by Patrick McHardy and Pablo Neira Ayuso, among many other 
 
 </div>
 
-<div class="refsect1"><a name="AEN3027"></a>
 
 ## Copyright
 
