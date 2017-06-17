@@ -1,38 +1,40 @@
 ---
 layout: post
-title: "nftables：nft man文档"
-description: "这里是一份nft man文档"
+title: "nftables：nft man文档阅读笔记"
+description: "这里是一份nft man文档笔记"
 categories: [system]
 tags: [nft, nftables ]
 ---
 
-> 最近利用空闲时间学习了nftables的基础知识，将man文档翻译一遍加深记忆。
+> 利用空闲时间学习了nftables的基础知识，其中官方的man page中包含了大量信息，在阅读过程中整理了一份带中文注释的笔记，以辅助加深记忆。
 
 * Kramdown table of contents
 {:toc .toc}
 
 
-## Name
+## 工具名称
 
 nft --  Administration tool for packet filtering and classification
 
-
-## Synopsis
-
-***nft*** [ `-n | --numeric` ] [ `-s | --stateless` ] [ `[-I | --includepath] directory` ] [ `[-f | --file] filename` | `[-i | --interactive] | cmd` ]
-
-***nft*** [ `-h | --help` ] [ `-v | --version` ]
+nftables 作为新一代的防火墙策略框架，旨在替代之前的各种防火墙工具诸如iptables/ebtables等，而且提供了类似tc的带宽限速能力。而nft则提供了nftables的命令行入口，是用户空间的管理工具。
 
 
-## Description
+## 基本用法
+
+`nft [ -n | --numeric ] [ -s | --stateless ] [ [-I | --includepath] directory ] [ [-f | --file] filename | [-i | --interactive] | cmd ]`
+
+`nft [ -h | --help ] [ -v | --version ]`
+
+
+## 工具描述
 
 nft is used to set up, maintain and inspect packet filtering and classification rules in the Linux kernel.
 
 
 
-## Options
+## 选项说明
 
-For a full summary of options, run ***nft --help***.
+For a full summary of options, run `nft --help`.
 
 
 
@@ -40,7 +42,8 @@ For a full summary of options, run ***nft --help***.
 
 <dd>
 
-Show help message and all options.
+
+查看帮助信息.
 
 </dd>
 
@@ -48,7 +51,8 @@ Show help message and all options.
 
 <dd>
 
-Show version.
+
+查看版本号.
 
 </dd>
 
@@ -56,7 +60,7 @@ Show version.
 
 <dd>
 
-Show data numerically. When used once (the default behaviour), skip lookup of addresses to symbolic names. Use twice to also show Internet services (port numbers) numerically. Use three times to also show protocols and UIDs/GIDs numerically.
+以数值方式展示数据，可重复使用，一个-n表示不解析域名，第二次不解析端口号，第三次不解析协议和uid/gid。
 
 </dd>
 
@@ -72,7 +76,7 @@ Omit stateful information of rules and stateful objects.
 
 <dd>
 
-Translate IP addresses to names. Usually requires network traffic for DNS lookup.
+将ip地址解析成域名，依赖dns解析。
 
 </dd>
 
@@ -88,7 +92,7 @@ Show rule handles in output.
 
 <dd>
 
-Add the directory directory to the list of directories to be searched for included files.
+添加include文件搜索目录
 
 </dd>
 
@@ -96,7 +100,7 @@ Add the directory directory to the list of directories to be searched for includ
 
 <dd>
 
-Read input from filename.
+从文件获取输入
 
 </dd>
 
@@ -104,44 +108,42 @@ Read input from filename.
 
 <dd>
 
-Read input from an interactive readline CLI.
+从交互式cli获取输入
 
 </dd>
 
 
 
-## Input file format
+## 文件格式
 
 
-### Lexical conventions
+### 语法规定
 
-Input is parsed line-wise. When the last character of a line, just before the newline character, is a non-quoted backslash (\\), the next line is treated as a continuation. Multiple commands on the same line can be separated using a semicolon (;).
+单行过长可用`\`换行连接；
+多个命令写到同一行可用分号`;` 分隔；
+注释使用井号`#`打头；
+标识符用大小写字母打头，后面跟数字字母下划线正斜杠反斜杠以及点号;
+用双引号引起来表示纯字符串。
 
-A hash sign (#) begins a comment. All following characters on the same line are ignored.
+### 文件引用
 
-Identifiers begin with an alphabetic character (a-z,A-Z), followed zero or more alphanumeric characters (a-z,A-Z,0-9) and the characters slash (/), backslash (\\), underscore (_) and dot (.). Identifiers using different characters or clashing with a keyword need to be enclosed in double quotes (").
+`include "filename"`
 
-
-### Include files
-
-***include***"filename"
-
-Other files can be included by using the ***include*** statement. The directories to be searched for include files can be specified using the `-I/--includepath` option.
-
-If the filename parameter is a directory, then all files in the directory are loaded in alphabetical order.
+可由外部文件通过`include`导入到当前文件，用`-I/--includepath`指定导入文件所在目录，如果include后面接的是目录而非文件，则整个目录的文件将以字母顺序依次导入。
 
 
 
-### Symbolic variables
+### 符号变量
 
-***define******`variable` = expr***
+`define variable = expr`
 
-***`variable`***
+`$variable`
 
 Symbolic variables can be defined using the ***define*** statement. Variable references are expressions and can be used initialize other variables. The scope of a definition is the current block and all blocks contained within.
+变量使用`define`定义，变量引用属于表达式，可以用于初始化其他变量，变量的生效范围在当前block以及被包含的所有block内。
 
 
-***Example 1. Using symbolic variables***
+***示例 1. 使用符号变量***
 
 ~~~
 define int_if1 = eth0
@@ -152,10 +154,10 @@ filter input iif $int_ifs accept
 ~~~
 
 
-## Address families
+## 地址类型
 
 Address families determine the type of packets which are processed. For each address family the kernel contains so called hooks at specific stages of the packet processing paths, which invoke nftables if rules for these hooks exist.
-
+根据处理的包的种类不同可以将其分为不同的类型。不同类型的地址在内核中包含有特定阶段的处理路径和hook点，当对应hook的规则存在时则会被nftables处理。具体类型如下：
 
 
 `ip`
@@ -186,7 +188,7 @@ Internet (IPv4/IPv6) address family.
 
 <dd>
 
-ARP address family, handling packets vi
+ARP address family, 
 
 </dd>
 
@@ -207,9 +209,8 @@ Netdev address family, handling packets from ingress.
 </dd>
 
 
-
 All nftables objects exist in address family specific namespaces, therefore all identifiers include an address family. If an identifier is specified without an address family, the ip family is used by default.
-
+所有nftables对象存在于特定的地址类型namespace中，换言之所有identifier都含有一个特定的地址类型，如果未指定则默认使用ip类型。
 
 ### IPv4/IPv6/Inet address families
 
@@ -263,7 +264,7 @@ The Netdev address family handles packets from ingress.
 
 ## Tables
 
-{add | delete | list | flush}***table*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_}
+{add | delete | list | flush}***table*** [family] {table}
 
 Tables are containers for chains, sets and stateful objects. They are identified by their address family and their name. The address family must be one of ip, ip6, inet, arp, bridge, netdev. The inet address family is a dummy family which is used to create hybrid IPv4/IPv6 tables. When no address family is specified, ip is used by default.
 
@@ -305,11 +306,11 @@ Flush all chains and rules of the specified table.
 
 ## Chains
 
-{add}***chain*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {chain} {<tt class="replaceable">_hook_} {<tt class="replaceable">_priority_} {<tt class="replaceable">_policy_} {<tt class="replaceable">_device_}
+{add}***chain*** [family] {table} {chain} {_hook_} {_priority_} {policy} {_device_}
 
-{add | create | delete | list | flush}***chain*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {chain}
+{add | create | delete | list | flush}***chain*** [family] {table} {chain}
 
-{rename}***chain*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {chain} {<tt class="replaceable">_newname_}
+{rename}***chain*** [family] {table} {chain} {_newname_}
 
 Chains are containers for rules. They exist in two kinds, base chains and regular chains. A base chain is an entry point for packets from the networking stack, a regular chain may be used as jump target and is used for better rule organization.
 
@@ -366,9 +367,9 @@ Flush all rules of the specified chain.
 
 ## Rules
 
-[add | insert]***rule*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {chain} [position <tt class="replaceable">_position_] {<tt class="replaceable">_statement_...}
+[add | insert]***rule*** [family] {table} {chain} [position _position_] {_statement_...}
 
-{delete}***rule*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {chain} {handle <tt class="replaceable">_handle_}
+{delete}***rule*** [family] {table} {chain} {handle _handle_}
 
 Rules are constructed from two kinds of components according to a set of grammatical rules: expressions and statements.
 
@@ -400,20 +401,21 @@ Delete the specified rule.
 
 ## Sets
 
-{add} ***set*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {<tt class="replaceable">_set_}{ {<tt class="replaceable">_type_} [<tt class="replaceable">_flags_] [<tt class="replaceable">_timeout_] [<tt class="replaceable">_gc-interval_] [<tt class="replaceable">_elements_] [<tt class="replaceable">_size_] [<tt class="replaceable">_policy_]}
+`{add} set family] {table} {set}{ {type} [flags] [timeout] [gc-interval] [elements] [size] [policy]}`
 
-{delete | list | flush} ***set*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {<tt class="replaceable">_set_}
+`{delete | list | flush} set [family] {table} {set}`
 
-{add | delete} ***element*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {<tt class="replaceable">_set_}{ {<tt class="replaceable">_elements_}}
+`{add | delete} element [family] {table} {set}{ {elements}}`
 
 Sets are elements containers of an user-defined data type, they are uniquely identified by an user-defined name and attached to tables.
+sets 是用户定义的数据类型的容器，具有用户定义的唯一标识，被应用到table上。
 
 
 `add`
 
 <dd>
 
-Add a new set in the specified table.
+在指定的table中添加一个新的set
 
 </dd>
 
@@ -421,7 +423,7 @@ Add a new set in the specified table.
 
 <dd>
 
-Delete the specified set.
+删除指定set
 
 </dd>
 
@@ -429,15 +431,14 @@ Delete the specified set.
 
 <dd>
 
-Display the elements in the specified set.
-
+查看set内的元素
 </dd>
 
 `flush`
 
 <dd>
 
-Remove all elements from the specified set.
+清空整个set
 
 </dd>
 
@@ -445,7 +446,7 @@ Remove all elements from the specified set.
 
 <dd>
 
-Comma-separated list of elements to add into the specified set.
+往set中添加元素，多个使用逗号分隔
 
 </dd>
 
@@ -453,33 +454,33 @@ Comma-separated list of elements to add into the specified set.
 
 <dd>
 
-Comma-separated list of elements to delete from the specified set.
+从set中删除元素，多个使用逗号分隔
 
 </dd>
 
 
 
-***Table 4. Set specifications***
+***Table 4. Set 参数***
 
-| Keyword | Description | Type |
+| 关键字 | 描述 | 类型 |
 | --- | --- | --- |
-| type | data type of set elements | string: ipv4_addr, ipv6_addr, ether_addr, inet_proto, inet_service, mark |
+| type | 元素的数据类型 | string: ipv4_addr, ipv6_addr, ether_addr, inet_proto, inet_service, mark |
 | flags | set flags | string: constant, interval, timeout |
-| timeout | time an element stays in the set | string, decimal followed by unit. Units are: d, h, m, s |
-| gc-interval | garbage collection interval, only available when timeout or flag timeout are active | string, decimal followed by unit. Units are: d, h, m, s |
-| elements | elements contained by the set | set data type |
-| size | maximun number of elements in the set | unsigned integer (64 bit) |
+| timeout | 元素在set中的存活时间 | string, 带单位的小数. 单位: d, h, m, s |
+| gc-interval | 垃圾回收间隔, 仅当timeout或flag timeout设置时生效 | string, decimal followed by unit. Units are: d, h, m, s |
+| elements | set中包含的元素 | set data type |
+| size | set可存放的最大元素个数 | unsigned integer (64 bit) |
 | policy | set policy | string: performance [default], memory |
 
 
 
 ## Maps
 
-{add} ***map*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {<tt class="replaceable">_map_}{ {<tt class="replaceable">_type_} [<tt class="replaceable">_flags_] [<tt class="replaceable">_elements_] [<tt class="replaceable">_size_] [<tt class="replaceable">_policy_]}
+`{add} map [family] {table} {map}{ {type} [flags] [elements] [size] [policy]}`
 
-{delete | list | flush} ***map*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {<tt class="replaceable">_map_}
+`{delete | list | flush} map [family] {table} {map}`
 
-{add | delete} ***element*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {<tt class="replaceable">_map_}{ {<tt class="replaceable">_elements_}}
+`{add | delete} element [family] {table} {map}{ {elements}}`
 
 Maps store data based on some specific key used as input, they are uniquely identified by an user-defined name and attached to tables.
 
@@ -549,7 +550,7 @@ Comma-separated list of element keys to delete from the specified map.
 
 ## Stateful objects
 
-{add | delete | list | reset} ***type*** [<tt class="replaceable">_family_] {<tt class="replaceable">_table_} {<tt class="replaceable">_object_}
+`{add | delete | list | reset} type [family] {table} {object}`
 
 Stateful objects are attached to tables and are identified by an unique name. They group stateful information from rules, to reference them in rules the keywords "type name" are used e.g. "counter name".
 
@@ -589,7 +590,7 @@ List-and-reset stateful object.
 
 ### Ct
 
-***ct*** {helper} {type} {<tt class="replaceable">_type_} {protocol} {<tt class="replaceable">_protocol_} [l3proto] [<tt class="replaceable">_family_]
+***ct*** {helper} {type} {type} {protocol} {protocol} [l3proto] [family]
 
 Ct helper is used to define connection tracking helpers that can then be used in combination with the "ct helper set" statement. type and protocol are mandatory, l3proto is derived from the table family by default, i.e. in the inet table the kernel will try to load both the ipv4 and ipv6 helper backends, if they are supported by the kernel.
 
@@ -604,7 +605,7 @@ Ct helper is used to define connection tracking helpers that can then be used in
 
 
 
-***Example 2. defining and assigning ftp helper***
+***示例 2. defining and assigning ftp helper***
 
 Unlike iptables, helper assignment needs to be performed after the conntrack lookup has completed, for example with the default 0 hook priority.
 
@@ -660,12 +661,13 @@ Each expression has a data type, which determines the size, parsing and represen
 
 ### describe command
 
-***describe*** {<tt class="replaceable">_expression_}
+`describe {expression}`
 
 The ***describe*** command shows information about the type of an expression and its data type.
 
 
-***Example 3. The ***describe*** command***
+
+***示例 3. The `describe` command***
 
 ~~~
 $ nft describe tcp flags
@@ -734,7 +736,7 @@ The bitmask type (***bitmask***) is used for bitmasks.
 The string type is used to for character strings. A string begins with an alphabetic character (a-zA-Z) followed by zero or more alphanumeric characters or the characters /, -, _ and .. In addition anything enclosed in double quotes (") is recognized as a string.
 
 
-***Example 4. String specification***
+***示例 4. String specification***
 
 ~~~
 
@@ -761,7 +763,7 @@ filter input iifname "(eth0)"
 The link layer address type is used for link layer addresses. Link layer addresses are specified as a variable amount of groups of two hexadecimal digits separated using colons (:).
 
 
-***Example 5. Link layer address specification***
+***示例 5. Link layer address specification***
 
 ~~~
 
@@ -785,7 +787,7 @@ filter input ether daddr 20:c9:d0:43:12:d9
 The IPv4 address type is used for IPv4 addresses. Addresses are specified in either dotted decimal, dotted hexadecimal, dotted octal, decimal, hexadecimal, octal notation or as a host name. A host name will be resolved using the standard system resolver.
 
 
-***Example 6. IPv4 address specification***
+***示例 6. IPv4 address specification***
 
 ~~~
 # dotted decimal notation
@@ -811,7 +813,7 @@ filter output ip daddr localhost
 The IPv6 address type is used for IPv6 addresses. FIXME
 
 
-***Example 7. IPv6 address specification***
+***示例 7. IPv6 address specification***
 
 ~~~
 # abbreviated loopback address
@@ -844,7 +846,7 @@ The following keywords will automatically resolve into a boolean type with given
 | missing | 0 |
 
 
-***Example 8. Boolean specification***
+***示例 8. Boolean specification***
 
 The following expressions support a boolean comparison:
 
@@ -867,7 +869,6 @@ filter input exthdr frag missing
 
 # match if TCP timestamp option is present
 filter input tcp option timestamp exists
-                
 
 ~~~
 
@@ -912,13 +913,12 @@ The following keywords may be used when specifying the ICMP type:
 
 
 
-***Example 9. ICMP Type specification***
+***示例 9. ICMP Type specification***
 
 ~~~
 
 # match ping packets
 filter output icmp type { echo-request, echo-reply }
-                
 
 ~~~
 
@@ -968,22 +968,14 @@ The following keywords may be used when specifying the ICMPv6 type:
 | mld2-listener-report | 143 |
 
 
-
-
-***Example 10. ICMPv6 Type specification***
+***示例 10. ICMPv6 Type specification***
 
 ~~~
 
 # match ICMPv6 ping packets
 filter output icmpv6 type { echo-request, echo-reply }
-                
 
 ~~~
-
-
-
-
-
 
 
 
@@ -994,9 +986,10 @@ The lowest order expression is a primary expression, representing either a const
 
 ### Meta expressions
 
-***meta*** {length | nfproto | l4proto | protocol | priority}
+`meta {length | nfproto | l4proto | protocol | priority}`
 
-[meta] {mark | iif | iifname | iiftype | oif | oifname | oiftype | skuid | skgid | nftrace | rtclassid | ibriport | obriport | pkttype | cpu | iifgroup | oifgroup | cgroup | random}
+`[meta] {mark | iif | iifname | iiftype | oif | oifname | oiftype}`
+`[meta] {skuid | skgid | nftrace | rtclassid | ibriport | obriport | pkttype | cpu | iifgroup | oifgroup | cgroup | random}`
 
 A meta expression refers to meta data associated with a packet.
 
@@ -1048,7 +1041,7 @@ There are two types of meta expressions: unqualified and qualified meta expressi
 
 
 
-***Example 11. Using meta expressions***
+***示例 11. Using meta expressions***
 
 ~~~
 
@@ -1057,7 +1050,6 @@ filter output meta oif eth0
 
 # unqualified meta expression
 filter output oif eth0
-                    
 
 ~~~
 
@@ -1084,7 +1076,7 @@ A fib expression queries the fib (forwarding information base) to obtain informa
 
 
 
-***Example 12. Using fib expressions***
+***示例 12. Using fib expressions***
 
 ~~~
 
@@ -1096,7 +1088,6 @@ filter prerouting fib daddr . iif type != { local, broadcast, multicast } drop
 
 # perform lookup in a specific 'blackhole' table (0xdead, needs ip appropriate ip rule)
 filter prerouting meta mark set 0xdead fib daddr . mark type vmap { blackhole : drop, prohibit : jump prohibited, unreachable : drop }
-                    
 
 ~~~
 
@@ -1131,7 +1122,7 @@ A routing expression refers to routing data associated with a packet.
 
 
 
-***Example 13. Using routing expressions***
+***示例 13. Using routing expressions***
 
 ~~~
 
@@ -1143,7 +1134,6 @@ ip filter output rt nexthop 192.168.0.1
 ip6 filter output rt nexthop fd00::1
 inet filter meta nfproto ipv4 output rt nexthop 192.168.0.1
 inet filter meta nfproto ipv6 output rt nexthop fd00::1
-                    
 
 ~~~
 
@@ -1161,7 +1151,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### Ethernet header expression
 
-***ether*** [<tt class="replaceable">_ethernet header field_]
+***ether*** [_ethernet header field_]
 
 
 ***Table 27. Ethernet header expression types***
@@ -1179,7 +1169,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### VLAN header expression
 
-***vlan*** [<tt class="replaceable">_VLAN header field_]
+***vlan*** [_VLAN header field_]
 
 
 ***Table 28. VLAN header expression***
@@ -1193,12 +1183,9 @@ Payload expressions refer to data from the packet's payload.
 
 
 
-
-
-
 ### ARP header expression
 
-***arp*** [<tt class="replaceable">_ARP header field_]
+***arp*** [_ARP header field_]
 
 
 ***Table 29. ARP header expression***
@@ -1218,7 +1205,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### IPv4 header expression
 
-***ip*** [<tt class="replaceable">_IPv4 header field_]
+***ip*** [_IPv4 header field_]
 
 
 ***Table 30. IPv4 header expression***
@@ -1245,7 +1232,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### ICMP header expression
 
-***icmp*** [<tt class="replaceable">_ICMP header field_]
+***icmp*** [_ICMP header field_]
 
 
 ***Table 31. ICMP header expression***
@@ -1267,7 +1254,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### IPv6 header expression
 
-***ip6*** [<tt class="replaceable">_IPv6 header field_]
+***ip6*** [_IPv6 header field_]
 
 
 ***Table 32. IPv6 header expression***
@@ -1291,7 +1278,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### ICMPv6 header expression
 
-***icmpv6*** [<tt class="replaceable">_ICMPv6 header field_]
+***icmpv6*** [_ICMPv6 header field_]
 
 
 ***Table 33. ICMPv6 header expression***
@@ -1314,7 +1301,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### TCP header expression
 
-***tcp*** [<tt class="replaceable">_TCP header field_]
+***tcp*** [_TCP header field_]
 
 
 ***Table 34. TCP header expression***
@@ -1339,7 +1326,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### UDP header expression
 
-***udp*** [<tt class="replaceable">_UDP header field_]
+***udp*** [_UDP header field_]
 
 
 ***Table 35. UDP header expression***
@@ -1358,7 +1345,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### UDP-Lite header expression
 
-***udplite*** [<tt class="replaceable">_UDP-Lite header field_]
+***udplite*** [_UDP-Lite header field_]
 
 
 ***Table 36. UDP-Lite header expression***
@@ -1376,7 +1363,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### SCTP header expression
 
-***sctp*** [<tt class="replaceable">_SCTP header field_]
+***sctp*** [_SCTP header field_]
 
 
 ***Table 37. SCTP header expression***
@@ -1395,7 +1382,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### DCCP header expression
 
-***dccp*** [<tt class="replaceable">_DCCP header field_]
+***dccp*** [_DCCP header field_]
 
 
 ***Table 38. DCCP header expression***
@@ -1412,7 +1399,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### Authentication header expression
 
-***ah*** [<tt class="replaceable">_AH header field_]
+***ah*** [_AH header field_]
 
 
 ***Table 39. AH header expression***
@@ -1432,7 +1419,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### Encrypted security payload header expression
 
-***esp*** [<tt class="replaceable">_ESP header field_]
+***esp*** [_ESP header field_]
 
 
 ***Table 40. ESP header expression***
@@ -1449,7 +1436,7 @@ Payload expressions refer to data from the packet's payload.
 
 ### IPcomp header expression
 
-***comp*** [<tt class="replaceable">_IPComp header field_]
+***comp*** [_IPComp header field_]
 
 
 ***Table 41. IPComp header expression***
@@ -1471,23 +1458,23 @@ Extension header expressions refer to data from variable-sized protocol headers,
 
 nftables currently supports matching (finding) a given ipv6 extension header or TCP option.
 
-***hbh*** {nexthdr | hdrlength}
+`hbh {nexthdr | hdrlength}`
 
-***frag*** {nexthdr | frag-off | more-fragments | id}
+`frag {nexthdr | frag-off | more-fragments | id}`
 
-***rt*** {nexthdr | hdrlength | type | seg-left}
+`rt {nexthdr | hdrlength | type | seg-left}`
 
-***dst*** {nexthdr | hdrlength}
+`dst {nexthdr | hdrlength}`
 
-***mh*** {nexthdr | hdrlength | checksum | type}
+`mh {nexthdr | hdrlength | checksum | type}`
 
-***tcp option*** {eol | noop | maxseg | window | sack-permitted | sack | sack0 | sack1 | sack2 | sack3 | timestamp} [<tt class="replaceable">_tcp_option_field_]
+`tcp option {eol | noop | maxseg | window | sack-permitted | sack | sack0 | sack1 | sack2 | sack3 | timestamp} [_tcp_option_field_]`
 
 The following syntaxes are valid only in a relational expression with boolean type on right-hand side for checking header existence only:
 
-***exthdr*** {hbh | frag | rt | dst | mh}
+`exthdr {hbh | frag | rt | dst | mh}`
 
-***tcp option*** {eol | noop | maxseg | window | sack-permitted | sack | sack0 | sack1 | sack2 | sack3 | timestamp}
+`tcp option {eol | noop | maxseg | window | sack-permitted | sack | sack0 | sack1 | sack2 | sack3 | timestamp}`
 
 
 ***Table 42. IPv6 extension headers***
@@ -1522,29 +1509,20 @@ The following syntaxes are valid only in a relational expression with boolean ty
 
 
 
-***Example 14. finding TCP options***
+***示例 14. finding TCP options***
 
 ~~~
-
 filter input tcp option sack-permitted kind 1 counter
-                    
-
 ~~~
 
 
 
 
-***Example 15. matching IPv6 exthdr***
+***示例 15. matching IPv6 exthdr***
 
 ~~~
-
 ip6 filter input frag more-fragments 1 counter
-                    
-
 ~~~
-
-
-
 
 
 
@@ -1554,9 +1532,9 @@ Conntrack expressions refer to meta data of the connection tracking entry associ
 
 There are three types of conntrack expressions. Some conntrack expressions require the flow direction before the conntrack key, others must be used directly because they are direction agnostic. The ***packets***, ***bytes*** and ***avgpkt*** keywords can be used with or without a direction. If the direction is omitted, the sum of the original and the reply direction is returned. The same is true for the ***zone***, if a direction is given, the zone is only matched if the zone id is tied to the given direction.
 
-***ct*** {state | direction | status | mark | expiration | helper | label | l3proto | protocol | bytes | packets | avgpkt | zone}
+`ct {state | direction | status | mark | expiration | helper | label | l3proto | protocol | bytes | packets | avgpkt | zone}`
 
-***ct*** {original | reply} {l3proto | protocol | saddr | daddr | proto-src | proto-dst | bytes | packets | avgpkt | zone}
+`ct {original | reply} {l3proto | protocol | saddr | daddr | proto-src | proto-dst | bytes | packets | avgpkt | zone}`
 
 
 ***Table 44. Conntrack expressions***
@@ -1584,10 +1562,6 @@ There are three types of conntrack expressions. Some conntrack expressions requi
 
 
 
-
-
-
-
 ## Statements
 
 Statements represent actions to be performed. They can alter control flow (return, jump to a different chain, accept or drop the packet) or can perform actions, such as logging, rejecting a packet, etc.
@@ -1599,9 +1573,9 @@ Statements exist in two kinds. Terminal statements unconditionally terminate eva
 
 The verdict statement alters control flow in the ruleset and issues policy decisions for packets.
 
-{accept | drop | queue | continue | return}
+`{accept | drop | queue | continue | return}`
 
-{jump | goto} {chain}
+`{jump | goto} {chain}`
 
 
 `accept`
@@ -1663,21 +1637,15 @@ Similar to ***jump***, but the current position is not pushed to the call stack,
 
 
 
-***Example 16. Verdict statements***
+***示例 16. Verdict statements***
 
 ~~~
-
 # process packets from eth0 and the internal network in from_lan
 # chain, drop all packets from eth0 with different source addresses.
 
 filter input iif eth0 ip saddr 192.168.0.0/24 jump from_lan
 filter input iif eth0 drop
-                    
-
 ~~~
-
-
-
 
 
 
@@ -1686,39 +1654,28 @@ filter input iif eth0 drop
 The payload statement alters packet content. It can be used for example to set ip DSCP (differv) header field or ipv6 flow labels.
 
 
-***Example 17. route some packets instead of bridging***
+***示例 17. route some packets instead of bridging***
 
 ~~~
-
 # redirect tcp:http from 192.160.0.0/16 to local machine for routing instead of bridging
 # assumes 00:11:22:33:44:55 is local MAC address.
 bridge input meta iif eth0 ip saddr 192.168.0.0/16 tcp dport 80 meta pkttype set unicast ether daddr set 00:11:22:33:44:55
-                    
-
 ~~~
 
 
-
-
-***Example 18. Set IPv4 DSCP header field***
+***示例 18. Set IPv4 DSCP header field***
 
 ~~~
-
 ip forward ip dscp set 42
-                    
-
 ~~~
-
-
-
 
 
 
 ### Log statement
 
-***log*** [prefix <tt class="replaceable">_quoted_string_] [level <tt class="replaceable">_syslog-level_] [flags <tt class="replaceable">_log-flags_]
+`log [prefix _quoted_string_] [level _syslog-level_] [flags log-flags]`
 
-***log*** [group <tt class="replaceable">_nflog_group_] [prefix <tt class="replaceable">_quoted_string_] [queue-threshold <tt class="replaceable">_value_] [snaplen <tt class="replaceable">_size_]
+`log [group _nflog_group_] [prefix _quoted_string_] [queue-threshold value] [snaplen size]`
 
 The log statement enables logging of matching packets. When this statement is used from a rule, the Linux kernel will print some information on all matching packets, such as header fields, via the kernel log (where it can be read with dmesg(1) or read in the syslog). If the group number is specified, the Linux kernel will pass the packet to nfnetlink_log which will multicast the packet through a netlink socket to the specified multicast group. One or more userspace processes may subscribe to the group to receive the packets, see libnetfilter_queue documentation for details. This is a non-terminating statement, so the rule evaluation continues after the packet is logged.
 
@@ -1750,10 +1707,9 @@ The log statement enables logging of matching packets. When this statement is us
 
 
 
-***Example 19. Using log statement***
+***示例 19. Using log statement***
 
 ~~~
-
 # log the UID which generated the packet and ip options
 ip filter output log flags skuid flags ip options
 
@@ -1762,20 +1718,14 @@ ip filter output log flags tcp sequence,options
 
 # enable all supported log flags
 ip6 filter output log flags all
-                    
-
 ~~~
-
-
-
-
 
 
 ### Reject statement
 
-***reject*** [with] {icmp | icmp6 | icmpx} [type] {icmp_type | icmp6_type | icmpx_type}
+`reject [with] {icmp | icmp6 | icmpx} [type] {icmp_type | icmp6_type | icmpx_type}`
 
-***reject*** [with] {tcp} {reset}
+`reject [with] {tcp} {reset}`
 
 A reject statement is used to send back an error packet in response to the matched packet otherwise it is equivalent to drop so it is a terminating statement, ending rule traversal. This statement is only valid in the input, forward and output chains, and user-defined chains which are only called from those chains.
 
@@ -1796,8 +1746,6 @@ A reject statement is used to send back an error packet in response to the match
 | icmp6_type | ICMPv6 type response to be sent to the host | no-route, admin-prohibited, addr-unreachable, port-unreachable [default], policy-fail, reject-route |
 
 
-
-
 ***Table 49. reject statement type (inet)***
 
 | Value | Description | Type |
@@ -1806,15 +1754,11 @@ A reject statement is used to send back an error packet in response to the match
 
 
 
-
-
-
 ### Counter statement
 
 A counter statement sets the hit count of packets along with the number of bytes.
 
-***counter*** {packets <tt class="replaceable">_number_ } {bytes <tt class="replaceable">_number_ }
-
+`counter {packets _number_ } {bytes _number_ }`
 
 
 
@@ -1822,7 +1766,7 @@ A counter statement sets the hit count of packets along with the number of bytes
 
 The conntrack statement can be used to set the conntrack mark and conntrack labels.
 
-***ct*** {mark | eventmask | label | zone} [set]<tt class="replaceable">_value_
+`ct {mark | eventmask | label | zone} [set] value`
 
 The ct statement sets meta data associated with a connection. The zone id has to be assigned before a conntrack lookup takes place, i.e. this has to be done in prerouting and possibly output (if locally generated packets need to be placed in a distinct zone), with a hook priority of -300.
 
@@ -1840,22 +1784,18 @@ The ct statement sets meta data associated with a connection. The zone id has to
 
 
 
-***Example 20. save packet nfmark in conntrack***
+***示例 20. save packet nfmark in conntrack***
 
 ~~~
-
 ct mark set meta mark
-                    
-
 ~~~
 
 
 
 
-***Example 21. set zone mapped via interface***
+***示例 21. set zone mapped via interface***
 
 ~~~
-
 table inet raw {
   chain prerouting {
       type filter hook prerouting priority -300;
@@ -1866,24 +1806,16 @@ table inet raw {
       ct zone set oif map { "eth1" : 1, "veth1" : 2 }
   }
 }
-                
-
 ~~~
 
 
 
 
-***Example 22. restrict events reported by ctnetlink***
+***示例 22. restrict events reported by ctnetlink***
 
 ~~~
-
 ct eventmask set new or related or destroy
-                
-
 ~~~
-
-
-
 
 
 
@@ -1891,7 +1823,7 @@ ct eventmask set new or related or destroy
 
 A meta statement sets the value of a meta expression. The existing meta fields are: priority, mark, pkttype, nftrace.
 
-***meta*** {mark | priority | pkttype | nftrace} [set]<tt class="replaceable">_value_
+`meta {mark | priority | pkttype | nftrace} [set] value`
 
 A meta statement sets meta data associated with a packet.
 
@@ -1907,14 +1839,11 @@ A meta statement sets meta data associated with a packet.
 
 
 
-
-
-
 ### Limit statement
 
-***limit*** [rate] [over]<tt class="replaceable">_packet_number_ [/] {second | minute | hour | day} [burst <tt class="replaceable">_packet_number_ packets]
+`limit [rate] [over]_packet_number_ [/] {second | minute | hour | day} [burst _packet_number_ packets]`
 
-***limit*** [rate] [over]<tt class="replaceable">_byte_number_ {bytes | kbytes | mbytes} [/] {second | minute | hour | day | week} [burst <tt class="replaceable">_byte_number_ bytes]
+`limit [rate] [over]_byte_number_ {bytes | kbytes | mbytes} [/] {second | minute | hour | day | week} [burst _byte_number_ bytes]`
 
 A limit statement matches at a limited rate using a token bucket filter. A rule using this statement will match until this limit is reached. It can be used in combination with the log statement to give limited logging. The ***over*** keyword, that is optional, makes it match over the specified rate.
 
@@ -1928,26 +1857,23 @@ A limit statement matches at a limited rate using a token bucket filter. A rule 
 
 
 
-
-
-
 ### NAT statements
 
-***snat*** [to <tt class="replaceable">_address_ [:port]] [persistent, random, fully-random]
+`snat [to _address_ [:port]] [persistent, random, fully-random]`
 
-***snat*** [to <tt class="replaceable">_address_ - <tt class="replaceable">_address_ [:<tt class="replaceable">_port_ - <tt class="replaceable">_port_]] [persistent, random, fully-random]
+`snat [to _address_ - _address_ [:_port_ - _port_]] [persistent, random, fully-random]`
 
-***dnat*** [to <tt class="replaceable">_address_ [:<tt class="replaceable">_port_]] [persistent, random, fully-random]
+`dnat [to _address_ [:_port_]] [persistent, random, fully-random]`
 
-***dnat*** [to <tt class="replaceable">_address_ [:<tt class="replaceable">_port_ - <tt class="replaceable">_port_]] [persistent, random, fully-random]
+`dnat [to _address_ [:_port_ - _port_]] [persistent, random, fully-random]`
 
-***masquerade*** [to [:<tt class="replaceable">_port_]] [persistent, random, fully-random]
+`masquerade [to [:_port_]] [persistent, random, fully-random]`
 
-***masquerade*** [to [:<tt class="replaceable">_port_ - <tt class="replaceable">_port_]] [persistent, random, fully-random]
+`masquerade [to [:_port_ - _port_]] [persistent, random, fully-random]`
 
-***redirect*** [to [:<tt class="replaceable">_port_]] [persistent, random, fully-random]
+`redirect [to [:_port_]] [persistent, random, fully-random]`
 
-***redirect*** [to [:<tt class="replaceable">_port_ - <tt class="replaceable">_port_]] [persistent, random, fully-random]
+`redirect [to [:_port_ - _port_]] [persistent, random, fully-random]`
 
 The nat statements are only valid from nat chain types.
 
@@ -1981,10 +1907,9 @@ Note that all nat statements require both prerouting and postrouting base chains
 
 
 
-***Example 23. Using NAT statements***
+***示例 23. Using NAT statements***
 
 ~~~
-
 # create a suitable table/chain setup for all further examples
 add table nat
 add chain nat prerouting { type nat hook prerouting priority 0; }
@@ -2002,22 +1927,16 @@ add rule nat postrouting oif eth0 masquerade
 
 # redirect incoming TCP traffic for port 22 to port 2222
 add rule nat prerouting tcp dport 22 redirect to :2222
-                    
-
 ~~~
-
-
-
-
 
 
 ### Queue statement
 
 This statement passes the packet to userspace using the nfnetlink_queue handler. The packet is put into the queue identified by its 16-bit queue number. Userspace can inspect and modify the packet if desired. Userspace must then drop or reinject the packet into the kernel. See libnetfilter_queue documentation for details.
 
-***queue*** [num <tt class="replaceable">_queue_number_] [bypass]
+`queue [num _queue_number_] [bypass]`
 
-***queue*** [num <tt class="replaceable">_queue_number_from_ - <tt class="replaceable">_queue_number_to_] [bypass,fanout]
+`queue [num _queue_number_from_ - _queue_number_to_] [bypass,fanout]`
 
 
 ***Table 55. queue statement values***
@@ -2030,18 +1949,12 @@ This statement passes the packet to userspace using the nfnetlink_queue handler.
 
 
 
-
 ***Table 56. queue statement flags***
 
 | Flag | Description |
 | --- | --- |
 | bypass | Let packets go through if userspace application cannot back off. Before using this flag, read libnetfilter_queue documentation for performance tuning recomendations. |
 | fanout | Distribute packets between several queues. |
-
-
-
-
-
 
 
 
@@ -2057,15 +1970,10 @@ Export your current ruleset in XML or JSON format to stdout.
 Examples:
 
 ~~~
-
-% nft export xml
 [...]
 % nft export json
 [...]
-                
-
 ~~~
-
 
 
 
@@ -2080,56 +1988,37 @@ To filter events related to a concrete action, use keyword 'new' or 'destroy'.
 Hit ^C to finish the monitor operation.
 
 
-***Example 24. Listen to all events, report in native nft format***
+***示例 24. Listen to all events, report in native nft format***
 
 ~~~
-
 % nft monitor
-                
-
 ~~~
 
 
 
-
-***Example 25. Listen to added tables, report in XML format***
+***示例 25. Listen to added tables, report in XML format***
 
 ~~~
-
 % nft monitor new tables xml
-                
-
 ~~~
 
 
 
 
-***Example 26. Listen to deleted rules, report in JSON format***
+***示例 26. Listen to deleted rules, report in JSON format***
 
 ~~~
-
 % nft monitor destroy rules json
-                
-
 ~~~
 
 
 
 
-***Example 27. Listen to both new and destroyed chains, in native nft format***
+***示例 27. Listen to both new and destroyed chains, in native nft format***
 
 ~~~
-
 % nft monitor chains
-                
-
 ~~~
-
-
-
-
-
-
 
 
 ## Error reporting
@@ -2139,54 +2028,40 @@ When an error is detected, nft shows the line(s) containing the error, the posit
 For errors returned by the kernel, nft can't detect which parts of the input caused the error and the entire command is marked.
 
 
-***Example 28. Error caused by single incorrect expression***
+***示例 28. Error caused by single incorrect expression***
 
 ~~~
-
 <cmdline>:1:19-22: Error: Interface does not exist
 filter output oif eth0
                   ^^^^
-            
-
 ~~~
 
 
 
 
-***Example 29. Error caused by invalid combination of two expressions***
+***示例 29. Error caused by invalid combination of two expressions***
 
 ~~~
-
 <cmdline>:1:28-36: Error: Right hand side of relational expression (==) must be constant
 filter output tcp dport == tcp dport
                         ~~ ^^^^^^^^^
-            
-
 ~~~
 
 
 
 
-***Example 30. Error returned by the kernel***
+***示例 30. Error returned by the kernel***
 
 ~~~
-
 <cmdline>:0:0-23: Error: Could not process rule: Operation not permitted
 filter output oif wlan0
 ^^^^^^^^^^^^^^^^^^^^^^^
-            
-
 ~~~
 
 
-
-
-
-
-## Exit status
+## 退出状态码
 
 On success, nft exits with a status of 0. Unspecified errors cause it to exit with a status of 1, memory allocation errors with a status of 2, unable to open Netlink socket with 3.
-
 
 
 
@@ -2194,8 +2069,7 @@ On success, nft exits with a status of 0. Unspecified errors cause it to exit wi
 
 iptables(8), ip6tables(8), arptables(8), ebtables(8), ip(8), tc(8)
 
-There is an official wiki at: http://wiki.nftables.org
-
+There is an official wiki at: [wiki.nftables.org](http://wiki.nftables.org)
 
 
 
@@ -2205,14 +2079,12 @@ nftables was written by Patrick McHardy and Pablo Neira Ayuso, among many other 
 
 
 
-
 ## Copyright
 
-Copyright © 2008-2014 Patrick McHardy `<[kaber@trash.net](mailto:kaber@trash.net)>`
-Copyright © 2013-2016 Pablo Neira Ayuso `<[pablo@netfilter.org](mailto:pablo@netfilter.org)>`
+* Copyright © 2008-2014 Patrick McHardy <[kaber@trash.net](mailto:kaber@trash.net)>
+* Copyright © 2013-2016 Pablo Neira Ayuso <[pablo@netfilter.org](mailto:pablo@netfilter.org)>
 
 nftables is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License version 2 as published by the Free Software Foundation.
 
-This documentation is licenced under the terms of the Creative Commons Attribution-ShareAlike 4.0 license, [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).
-
+***This documentation is licenced under the terms of the Creative Commons Attribution-ShareAlike 4.0 license, [CC BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/).***
 
