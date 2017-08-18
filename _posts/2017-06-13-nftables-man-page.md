@@ -14,9 +14,8 @@ tags: [nft, nftables ]
 
 ## 工具名称
 
-nft --  Administration tool for packet filtering and classification
+nft --  包过滤规则管理工具
 
-nftables 作为新一代的防火墙策略框架，旨在替代之前的各种防火墙工具诸如iptables/ebtables等，而且提供了类似tc的带宽限速能力。而nft则提供了nftables的命令行入口，是用户空间的管理工具。
 
 
 ## 基本用法
@@ -28,13 +27,13 @@ nftables 作为新一代的防火墙策略框架，旨在替代之前的各种�
 
 ## 工具描述
 
-nft is used to set up, maintain and inspect packet filtering and classification rules in the Linux kernel.
+nftables 作为新一代的防火墙策略框架，旨在替代之前的各种防火墙工具诸如iptables/ebtables等，而且提供了类似tc的带宽限速能力。而nft则提供了nftables的命令行入口，是用户空间的管理工具。
 
 
 
 ## 选项说明
 
-For a full summary of options, run `nft --help`.
+执行`nft --help`查看完整帮助信息
 
 
 
@@ -68,8 +67,7 @@ For a full summary of options, run `nft --help`.
 
 <dd>
 
-Omit stateful information of rules and stateful objects.
-
+省略规则和有状态对象的状态信息
 </dd>
 
 `-N`
@@ -84,7 +82,7 @@ Omit stateful information of rules and stateful objects.
 
 <dd>
 
-Show rule handles in output.
+输出内容中展示规则handle信息
 
 </dd>
 
@@ -154,17 +152,16 @@ filter input iif $int_ifs accept
 ~~~
 
 
-## 地址类型
+## 地址族
 
-Address families determine the type of packets which are processed. For each address family the kernel contains so called hooks at specific stages of the packet processing paths, which invoke nftables if rules for these hooks exist.
-根据处理的包的种类不同可以将其分为不同的类型。不同类型的地址在内核中包含有特定阶段的处理路径和hook点，当对应hook的规则存在时则会被nftables处理。具体类型如下：
+根据处理的包的种类不同可以将其分为不同的地址族。不同的地址族在内核中包含有特定阶段的处理路径和hook点，当对应hook的规则存在时则会被nftables处理。具体类型如下：
 
 
 `ip`
 
 <dd>
 
-IPv4 address family.
+IPv4 地址族
 
 </dd>
 
@@ -172,7 +169,7 @@ IPv4 address family.
 
 <dd>
 
-IPv6 address family.
+IPv6 地址族
 
 </dd>
 
@@ -180,7 +177,7 @@ IPv6 address family.
 
 <dd>
 
-Internet (IPv4/IPv6) address family.
+Internet (IPv4/IPv6) 地址族
 
 </dd>
 
@@ -188,7 +185,7 @@ Internet (IPv4/IPv6) address family.
 
 <dd>
 
-ARP address family, 
+ARP 地址族
 
 </dd>
 
@@ -196,7 +193,7 @@ ARP address family,
 
 <dd>
 
-Bridge address family, handling packets which traverse a bridge device.
+Bridge 地址族
 
 </dd>
 
@@ -204,77 +201,73 @@ Bridge address family, handling packets which traverse a bridge device.
 
 <dd>
 
-Netdev address family, handling packets from ingress.
+Netdev 地址族
 
 </dd>
 
 
-All nftables objects exist in address family specific namespaces, therefore all identifiers include an address family. If an identifier is specified without an address family, the ip family is used by default.
-所有nftables对象存在于特定的地址类型namespace中，换言之所有identifier都含有一个特定的地址类型，如果未指定则默认使用ip类型。
-
+所有nftables对象存在于特定的地址族namespace中，换言之所有identifier都含有一个特定的地址族，如果未指定则默认使用`ip`地址族
 ### IPv4/IPv6/Inet address families
 
-The IPv4/IPv6/Inet address families handle IPv4, IPv6 or both types of packets. They contain five hooks at different packet processing stages in the network stack.
+IPv4/IPv6/Inet 地址族用于处理 IPv4和IPv6包，其在network stack中在不同的包处理阶段一共包含了5个hook.
 
+***Table 1. IPv4/IPv6/Inet 地址类hook列表***
 
-***Table 1. IPv4/IPv6/Inet address family hooks***
-
-| Hook | Description |
+| Hook名称 | 描述 |
 | --- | --- |
-| prerouting | All packets entering the system are processed by the prerouting hook. It is invoked before the routing process and is used for early filtering or changing packet attributes that affect routing. |
-| input | Packets delivered to the local system are processed by the input hook. |
-| forward | Packets forwarded to a different host are processed by the forward hook. |
-| output | Packets sent by local processes are processed by the output hook. |
-| postrouting | All packets leaving the system are processed by the postrouting hook. |
+| prerouting | 所有进入到系统的包都会被prerouting hook进行处理. 它在routing流程之前就被发起，用于靠前阶段的包过滤或者更改影响routing的包属性. |
+| input | 发往本地系统的包将被input hook处理. |
+| forward | 被转发到其他主机的包会经由forward hook处理. |
+| output | 由本地进程发送出去的包将被output hook处理. |
+| postrouting | 所有离开系统的包都将被postrouting hook处理. |
 
 
 
 ### ARP address family
 
-The ARP address family handles ARP packets received and sent by the system. It is commonly used to mangle ARP packets for clustering.
+ARP地址族用于处理经由系统接收和发送的ARP包。一般在集群环境中对ARP包进行mangle处理以支持clustering。
 
 
 ***Table 2. ARP address family hooks***
 
-| Hook | Description |
+| Hook | 描述 |
 | --- | --- |
-| input | Packets delivered to the local system are processed by the input hook. |
-| output | Packets send by the local system are processed by the output hook. |
+| input | 分发到本机的包会经过input hook. |
+| output | 由本机发出的包会经过output hook. |
 
 
 
 ### Bridge address family
 
-The bridge address family handles ethernet packets traversing bridge devices.
+bridge地址族处理通过桥接设备的ethernet包。
 
 
 
 ### Netdev address family
 
-The Netdev address family handles packets from ingress.
+Netdev地址族处理从ingress过来的包。
 
 
 ***Table 3. Netdev address family hooks***
 
 | Hook | Description |
 | --- | --- |
-| ingress | All packets entering the system are processed by this hook. It is invoked before layer 3 protocol handlers and it can be used for early filtering and policing. |
+| ingress | 所有进入系统的包都将被ingress hook处理。它在进入layer 3之前的阶段就开始处理。|
 
 
 
 ## Tables
 
-{add | delete | list | flush}***table*** [family] {table}
+`{add | delete | list | flush} table [family] {table}`
 
-Tables are containers for chains, sets and stateful objects. They are identified by their address family and their name. The address family must be one of ip, ip6, inet, arp, bridge, netdev. The inet address family is a dummy family which is used to create hybrid IPv4/IPv6 tables. When no address family is specified, ip is used by default.
-
+table是chain/set/stateful object的容器，table由其地址族和名字做标识。地址族必须属于ip, ip6, arp, bridge, netdev中的一种，inet地址族是一个虚拟地址族，同来创建同时包含IPv4和IPv6的table，如果没有指定地址族则默认使用`ip`地址族。
 
 
 `add`
 
 <dd>
 
-Add a new table for the given family with the given name.
+添加指定地址族，指定名称的table
 
 </dd>
 
@@ -282,7 +275,7 @@ Add a new table for the given family with the given name.
 
 <dd>
 
-Delete the specified table.
+删除指定的table
 
 </dd>
 
@@ -290,7 +283,7 @@ Delete the specified table.
 
 <dd>
 
-List all chains and rules of the specified table.
+列出指定table中的所有chain和rule
 
 </dd>
 
@@ -298,7 +291,7 @@ List all chains and rules of the specified table.
 
 <dd>
 
-Flush all chains and rules of the specified table.
+清除指定table中的所有chain和rule
 
 </dd>
 
@@ -306,21 +299,20 @@ Flush all chains and rules of the specified table.
 
 ## Chains
 
-{add}***chain*** [family] {table} {chain} {_hook_} {_priority_} {policy} {_device_}
+`{add} chain [family] {table} {chain} {hook} {priority} {policy} {device}`
 
-{add | create | delete | list | flush}***chain*** [family] {table} {chain}
+`{add | create | delete | list | flush} chain [family] {table} {chain}`
 
-{rename}***chain*** [family] {table} {chain} {_newname_}
+`{rename} chain [family] {table} {chain} {newname}`
 
-Chains are containers for rules. They exist in two kinds, base chains and regular chains. A base chain is an entry point for packets from the networking stack, a regular chain may be used as jump target and is used for better rule organization.
-
+chain是rule的容器，他们存在于两种类型，基础链（base chain）和常规链（regular chain）。base chain是网络栈中数据包的入口点，regular chain则可用于jump的目标并对规则进行更好地组织。
 
 
 `add`
 
 <dd>
 
-Add a new chain in the specified table. When a hook and priority value are specified, the chain is created as a base chain and hooked up to the networking stack.
+在指定table中添加新的链，当hook和权重值被指定时，添加的chain为base chain，将在网络栈中hook相关联。
 
 </dd>
 
@@ -328,7 +320,7 @@ Add a new chain in the specified table. When a hook and priority value are speci
 
 <dd>
 
-Similar to the ***add*** command, but returns an error if the chain already exists.
+与`add`命令类似，不同之处在于当创建的chain存在时会返回错误。
 
 </dd>
 
@@ -336,7 +328,7 @@ Similar to the ***add*** command, but returns an error if the chain already exis
 
 <dd>
 
-Delete the specified chain. The chain must not contain any rules or be used as jump target.
+删除指定的chain，被删除的chain不能有规则且不能是跳转目标chain。
 
 </dd>
 
@@ -344,7 +336,7 @@ Delete the specified chain. The chain must not contain any rules or be used as j
 
 <dd>
 
-Rename the specified chain.
+重命名chain
 
 </dd>
 
@@ -352,7 +344,7 @@ Rename the specified chain.
 
 <dd>
 
-List all rules of the specified chain.
+列出指定chain中的所有rule
 
 </dd>
 
@@ -360,16 +352,16 @@ List all rules of the specified chain.
 
 <dd>
 
-Flush all rules of the specified chain.
+清除指定chain中所有rule
 
 </dd>
 
 
 ## Rules
 
-[add | insert]***rule*** [family] {table} {chain} [position _position_] {_statement_...}
+`[add | insert] rule [family] {table} {chain} [position position] {statement...}`
 
-{delete}***rule*** [family] {table} {chain} {handle _handle_}
+`{delete} rule [family] {table} {chain} {handle handle}`
 
 Rules are constructed from two kinds of components according to a set of grammatical rules: expressions and statements.
 
