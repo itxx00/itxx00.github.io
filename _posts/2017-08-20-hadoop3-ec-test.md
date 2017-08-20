@@ -183,4 +183,5 @@ hdfs ec -setPolicy -policy RS-3-2-64k -path /t2
 参考文档：
 
 [1] http://hadoop.apache.org/docs/r3.0.0-alpha4/hadoop-project-dist/hadoop-common/ClusterSetup.html
+
 [2] http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/HDFSErasureCoding.html
