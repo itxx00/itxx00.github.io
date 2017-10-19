@@ -77,6 +77,8 @@ nohup ./daemon.sh >out.log 2>&1 < /dev/null &
 2.0M  out.log
 ~~~
 
+这里留一个问题： 为什么使用```append```模式就不会出现这个问题？
+
 参考文档：
 
 [1] https://www.gnu.org/software/bash/manual/bash.html#Redirections
