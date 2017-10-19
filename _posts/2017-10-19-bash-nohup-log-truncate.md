@@ -61,6 +61,22 @@ nohup ./daemon.sh >out.log 2>&1 < /dev/null &
 
 将nohup启动进程后的输出重定向 ```>``` 替换为 ```>>```， 即改为append模式来写入日志，这时再truncate就不会出现上面的问题了。
 
+~~~
+ nohup ./daemon.sh >>out.log 2>&1  </dev/null &
+ 
+ 
+[root@localhost t]# ll -h out.log ;du -h out.log 
+-rw-r--r-- 1 root root 48M Oct 19 19:43 out.log
+64M   out.log
+[root@localhost t]# ll -h out.log ;du -h out.log 
+-rw-r--r-- 1 root root 77M Oct 19 19:43 out.log
+128M  out.log
+[root@localhost t]# truncate -s0 out.log              
+[root@localhost t]# ll -h out.log ;du -h out.log 
+-rw-r--r-- 1 root root 1.3M Oct 19 19:43 out.log
+2.0M  out.log
+~~~
+
 参考文档：
 
 [1] https://www.gnu.org/software/bash/manual/bash.html#Redirections
