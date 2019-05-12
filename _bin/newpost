@@ -1,0 +1,73 @@
+#!/bin/bash
+
+usage() {
+    echo "usage: $(basename $0) <new|post> <postname>"
+    exit
+}
+
+cd ~/itxx00.github.io/_posts || {
+    echo "cannot find project home"
+    exit 1
+}
+
+new() {
+    local dt=$(date '+%F')
+    if [[ -n $1 ]]; then
+        local pre=$(echo "$1"|awk -F'-' '{print $1}')
+        if [[ "$pre" =~ ([0-9]){4}$ ]]; then
+            postname="$1".md
+        else
+            postname="$dt"-"$1".md
+        fi
+    else
+        postname=$dt-$RANDOM.md
+    fi
+    cat >$postname <<EOF
+---
+layout: post
+title: "标题"
+description: "描述"
+categories: [shell]
+tags: [bash, ]
+---
+
+> 这里是一句长长的引言
+
+* Kramdown table of contents
+{:toc .toc}
+
+here is my post body
+EOF
+    echo "cd $(pwd) && vi $postname"
+}
+
+post() {
+    postname="$1"
+    if ! [[ -n $postname ]]; then
+        echo "must use with post name"
+        return 1
+    fi
+    local f=""
+    if [ -f $postname ]; then
+        f=$postname
+    elif [ -f $postname.md ]; then
+        f=$postname.md
+    fi
+    if ! [ -f $f ]; then
+        echo "cannot find post"
+        return 1
+    fi
+    git add $f
+    git commit -am "new post: $postname"
+    git push origin master
+}
+
+case $1 in
+    new|post)
+        $1 $2
+        ;;
+    *)
+        usage
+        ;;
+esac
+
