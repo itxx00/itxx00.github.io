@@ -104,6 +104,7 @@ firewall-cmd --add-rich-rule="rule family='ipv4' source address='10.0.0.2' port 
 -A IN_public_allow -s 10.0.0.2/32 -p udp -m udp --dport 161 -m conntrack --ctstate NEW -j ACCEPT
 ```
 
+参考链接：[^2]
 
 
 [^1]: https://fedoraproject.org/wiki/FirewallD/zh-cn
