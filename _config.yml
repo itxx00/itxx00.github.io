@@ -52,7 +52,7 @@ google_analytics:
 addthis_public_id: # AddThis sharing plugin. See http://www.addthis.com/
 
 paths:
-  home: /
+  home: /home/
   blog: /
   categories: /categories/
   tags: /tags/
