@@ -2,7 +2,7 @@
 encoding: UTF-8
 exclude: ["*.gem", "*.gemspec", "Gemfile", "Gemfile.lock", "node_modules", "Rakefile", "starter-kit", "vendor"]
 lang: cn
-permalink: /:year/:month/:day/:title/
+permalink: /blog/:year/:month/:day/:title/
 
 whitelist: [jekyll-feed, jekyll-redirect-from, jekyll-seo-tag, jekyll-sitemap]
 gems:
@@ -22,7 +22,7 @@ sass:
 
 # Site Data
 url: https://itxx00.github.io
-baseurl:
+baseurl: https://itxx00.github.io
 title: 运维老司机
 description: "系好安全带，我要发车了。。。"
 keywords: 'itxx00,运维'
@@ -52,7 +52,7 @@ google_analytics:
 addthis_public_id: # AddThis sharing plugin. See http://www.addthis.com/
 
 paths:
-  home: /home/
-  blog: /
+  home: /
+  blog: /blog/
   categories: /categories/
   tags: /tags/
