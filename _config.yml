@@ -2,7 +2,7 @@
 encoding: UTF-8
 exclude: ["*.gem", "*.gemspec", "Gemfile", "Gemfile.lock", "node_modules", "Rakefile", "starter-kit", "vendor"]
 lang: cn
-permalink: /blog/:year/:month/:day/:title/
+permalink: /:year/:month/:day/:title/
 
 whitelist: [jekyll-feed, jekyll-redirect-from, jekyll-seo-tag, jekyll-sitemap]
 gems:
@@ -22,7 +22,7 @@ sass:
 
 # Site Data
 url: https://itxx00.github.io
-baseurl: 
+baseurl:
 title: 运维老司机
 description: "系好安全带，我要发车了。。。"
 keywords: 'itxx00,运维'
@@ -33,17 +33,17 @@ author:
   email: itxx00@gmail.com
   social_links:
     - name: facebook
-      url: 
+      url:
     - name: github
       url: https://github.com/itxx00
     - name: linkedin
       url:
     - name: twitter
-      url: 
+      url:
 home:
   section1: <h1>运维老司机</h1>
 blog:
-  footer_content: 运维老司机的博客
+  footer_content: 运维老司机
 
 disqus:
   shortname:
@@ -53,6 +53,6 @@ addthis_public_id: # AddThis sharing plugin. See http://www.addthis.com/
 
 paths:
   home: /
-  blog: /blog/
-  categories: /blog/categories/
-  tags: /blog/tags/
+  blog: /
+  categories: /categories/
+  tags: /tags/
