@@ -5,7 +5,9 @@ usage() {
     exit
 }
 
-cd ~/itxx00.github.io/_posts || {
+basedir=$(cd $(dirname $0) && pwd)
+
+cd $basedir/../_posts || {
     echo "cannot find project home"
     exit 1
 }
