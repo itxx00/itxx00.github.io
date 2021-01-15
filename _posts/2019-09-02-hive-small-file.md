@@ -1,12 +1,12 @@
 ---
 layout: post
-title: "标题"
-description: "描述"
-categories: [shell]
-tags: [bash, ]
+title: "HIVE中常见的小文件合并方法"
+description: "hive使用过程中应尽量避免产生小文件"
+categories: [bigdata]
+tags: [hive, ]
 ---
 
-> 介绍hie小文件常见处理方法
+> 介绍hive小文件常见处理方法
 
 * Kramdown table of contents
 {:toc .toc}
