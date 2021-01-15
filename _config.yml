@@ -22,7 +22,7 @@ sass:
 
 # Site Data
 url: https://itxx00.github.io
-baseurl: 
+baseurl:
 title: 运维老司机
 description: "系好安全带，我要发车了。。。"
 keywords: 'itxx00,运维'
@@ -56,3 +56,4 @@ paths:
   blog: /blog/
   categories: /blog/categories/
   tags: /blog/tags/
+  about: /about/
