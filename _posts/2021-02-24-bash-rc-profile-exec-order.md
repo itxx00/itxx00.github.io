@@ -101,6 +101,11 @@ etc-profile-d
 
 3 non-login shell不会加载的配置有 ~/.bash_profile /etc/profile
 
-4 两种情况下都会加载的有/etc/bashrc /etc/profile.d
+4 两种情况下都会加载的有~/.bashrc /etc/bashrc /etc/profile.d
 
-而/etc/bashrc为系统内置文件不建议修改，如果是有全局环境变量需要设置建议放置到/etc/profile.d
+那么如果我们需要在系统全局设置一个环境变量，要保证login shell和non-login shell都能表现一致，需要如何设置呢？
+
+因为~/.bashrc为用户局部配置文件，不影响全局，而/etc/bashrc为系统内置文件不建议修改，如果是有全局环境变量需要设置建议放置到/etc/profile.d
+
+
+over.
