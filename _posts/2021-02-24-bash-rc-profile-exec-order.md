@@ -92,10 +92,12 @@ etc-profile-d
 
 ```
 
+需要注意的是以上测试是将变量放到每个配置末行，因为配置之间有互相加载的机制，如果放在其他位置则测试结果会不一样。
+
 ## 结论
 观察上面的结果，可以得出以下实验结论：
 
-1 login shell会加载所有配置,优先级为~/.bash_profile ~/.bashrc /etc/bashrc /etc/profile /etc/profile.d (这里注意测试变量位于/etc/profile末行)
+1 login shell会加载所有配置,优先级为~/.bash_profile ~/.bashrc /etc/bashrc /etc/profile /etc/profile.d
 
 2 non-login shell时加载优先级为 ~/.bashrc /etc/bashrc /etc/profile.d
 
