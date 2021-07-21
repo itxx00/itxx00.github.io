@@ -40,7 +40,7 @@ tags: [bash, ]
 
 here is my post body
 EOF
-    echo "cd $(pwd) && vi $postname"
+    vim "$postname"
 }
 
 post() {
