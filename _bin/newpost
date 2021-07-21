@@ -45,21 +45,7 @@ EOF
 
 post() {
     postname="$1"
-    if ! [[ -n $postname ]]; then
-        echo "must use with post name"
-        return 1
-    fi
-    local f=""
-    if [ -f $postname ]; then
-        f=$postname
-    elif [ -f $postname.md ]; then
-        f=$postname.md
-    fi
-    if ! [ -f $f ]; then
-        echo "cannot find post $f"
-        return 1
-    fi
-    git add $f
+    git add _posts/
     git commit -am "new post: $postname"
     git push origin master
 }
