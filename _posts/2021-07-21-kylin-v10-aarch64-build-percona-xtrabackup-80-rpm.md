@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "银行麒麟v10 aarch64机器构建percon-xtrabackup-80 rpm包"
+title: "银行麒麟v10 aarch64机器构建percona-xtrabackup-80 rpm包"
 description: "如何自己构建aarch64 xtrabackup rpm"
 categories: [shell]
 tags: [bash, ]
