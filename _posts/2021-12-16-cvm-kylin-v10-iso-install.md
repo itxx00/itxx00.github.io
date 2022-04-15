@@ -14,11 +14,14 @@ tags: [kylin, cvm]
 ## 1 准备
 iso: Kylin-Server-10-SP2-aarch64-Release-Build09-20210524.iso
 
-一台arm的cvm
+一台arm的cvm, 一块数据盘
 
 scp  Kylin-Server-10-SP2-aarch64-Release-Build09-20210524.iso  x.x.x.x:/kylin.iso
 
 ## 2 配置grub
+
+修改grub配置增加从iso引导的入口，重启机器时从iso引导进入安装流程
+
 ```
 
 # cat /etc/grub.d/40_custom
@@ -51,7 +54,7 @@ find /mnt -name grub.cfg
 ```
 blkid /kylin.iso
 ```
-可以获得iso的label信息
+可以获得isolabel信息
 
 下一步
 ```
@@ -63,3 +66,14 @@ reboot
 ```
 
 ## 3 开始装系统
+
+系统会安装到数据盘，因为系统盘被iso占用，mount状态无法使用，必须有独立的数据盘用来装系统
+注意安装cloud-init包。
+
+## 4 制作云镜像
+
+重启回到原先的系统
+```
+yum -y install qemu-img
+qemu-img convert -f raw -O qcow2 /dev/vdb /kylin.qcow2
+```
